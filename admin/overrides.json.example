@@ -1,0 +1,14 @@
+{
+  "marketplace": {
+    "installs": null,
+    "rating": null,
+    "notes": "Optional manual values from the Visual Studio Marketplace publisher dashboard."
+  },
+  "funnel": {
+    "productViews": null,
+    "checkoutOpens": null,
+    "paidOrders": null,
+    "freeClaims": null,
+    "notes": "Optional manual values from Gumroad analytics or another analytics source."
+  }
+}

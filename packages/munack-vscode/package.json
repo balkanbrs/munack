@@ -1,0 +1,97 @@
+{
+  "name": "munack",
+  "displayName": "Munack",
+  "publisher": "balkanbrs",
+  "version": "0.1.5",
+  "description": "Detect fake packages, fake imports, fake APIs, fake frameworks, fake dependencies, and hallucinated SDK references in AI-generated code.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/balkanbrs/munack.git"
+  },
+  "license": "MIT",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#0b1320",
+    "theme": "light"
+  },
+  "engines": {
+    "vscode": "^1.105.0"
+  },
+  "categories": [
+    "Linters",
+    "Programming Languages",
+    "Testing",
+    "Other"
+  ],
+  "keywords": [
+    "ai",
+    "ai-generated-code",
+    "ai-code-review",
+    "code-quality",
+    "cursor",
+    "dependency-check",
+    "dependency-scanner",
+    "fake-api",
+    "fake-dependency",
+    "fake-framework",
+    "fake-import",
+    "fake-package",
+    "hallucinated-package",
+    "import-checker",
+    "local-first",
+    "neovim",
+    "npm",
+    "openvsx",
+    "privacy",
+    "pypi",
+    "registry",
+    "supply-chain",
+    "terminal",
+    "theia",
+    "vscode",
+    "vscodium",
+    "windsurf"
+  ],
+  "activationEvents": [
+    "onCommand:munack.scanProject",
+    "onCommand:munack.checkCurrentFile",
+    "onCommand:munack.activateLicense",
+    "onCommand:munack.licenseStatus"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "munack.scanProject",
+        "title": "Munack: Scan Project"
+      },
+      {
+        "command": "munack.checkCurrentFile",
+        "title": "Munack: Check Current File"
+      },
+      {
+        "command": "munack.activateLicense",
+        "title": "Munack: Activate License"
+      },
+      {
+        "command": "munack.licenseStatus",
+        "title": "Munack: License Status"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json --noEmit && esbuild src/extension.ts --bundle --platform=node --external:vscode --format=cjs --outfile=dist/extension.js",
+    "build:test": "tsc -p tsconfig.test.json",
+    "test": "npm run build && npm run build:test && node dist/test/runTest.js",
+    "package": "npm run build && vsce package --no-dependencies -o dist/munack-0.1.5.vsix"
+  },
+  "dependencies": {
+    "@balkanbrs/munack-core": "0.1.4"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/vscode": "^1.105.0",
+    "@vscode/test-electron": "^2.5.2",
+    "mocha": "^11.7.5"
+  }
+}

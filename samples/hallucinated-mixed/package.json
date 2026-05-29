@@ -1,0 +1,9 @@
+{
+  "name": "munack-sample-hallucinated",
+  "private": true,
+  "dependencies": {
+    "react": "^19.0.0",
+    "ai-reality-hyper-sdk": "^1.0.0"
+  }
+}
+

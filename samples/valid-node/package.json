@@ -1,0 +1,9 @@
+{
+  "name": "munack-sample-valid-node",
+  "private": true,
+  "dependencies": {
+    "react": "^19.0.0",
+    "zod": "^4.1.12"
+  }
+}
+

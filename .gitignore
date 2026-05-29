@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+.DS_Store
+*.log
+*.vsix
+.idea/
+.vscode-test/
+.turbo/
+.theia-plugins/
+services/munack-license-api/api/storage/*.json
+!services/munack-license-api/api/storage/config.json.example
+admin/overrides.json

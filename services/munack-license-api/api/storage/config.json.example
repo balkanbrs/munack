@@ -1,0 +1,12 @@
+{
+  "product_name": "Munack",
+  "product_id": "YOUR_GUMROAD_PRODUCT_ID",
+  "seller_id": "YOUR_GUMROAD_SELLER_ID",
+  "ping_token": "OPTIONAL_SHARED_PING_TOKEN",
+  "verify_bearer_token": "",
+  "support_email": "support@munack.app",
+  "allowed_origin": "*",
+  "default_plan": "pro",
+  "team_keywords": ["team"],
+  "pro_keywords": ["pro"]
+}

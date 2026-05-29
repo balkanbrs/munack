@@ -1,0 +1,9 @@
+src/**
+src/test/**
+tsconfig.json
+tsconfig.test.json
+node_modules/**
+!node_modules/@balkanbrs/munack-core/dist/**
+!node_modules/@balkanbrs/munack-core/package.json
+**/*.map
+dist/test/**
