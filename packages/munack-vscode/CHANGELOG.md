@@ -1,8 +1,15 @@
 # Changelog
 
+## 0.1.6
+
+- Strengthened extension metadata and overview copy around slopsquatting and AI dependency trust.
+- Repackaged the VSIX for synchronized Marketplace and Open VSX release surfaces.
+
 ## 0.1.5
 
 - Retried Open VSX release packaging with the latest screenshots, logo, overview copy, and marketplace metadata.
+- Aligned the bundled shared core dependency with the current workspace version.
+- Expanded release-supporting materials linked from the repo during packaging.
 
 ## 0.1.4
 

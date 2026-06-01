@@ -1,6 +1,6 @@
 {
   "name": "munack-workspace",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "private": true,
   "description": "Munack monorepo - reality check for AI-generated code.",
   "engines": {
@@ -17,8 +17,7 @@
     "test:core": "npm run test -w @balkanbrs/munack-core",
     "test:extension": "npm run test -w munack",
     "package:vsix": "npm run package -w munack",
-    "verify": "npm run build && npm run test",
-    "admin": "node ./admin/server.mjs"
+    "verify": "npm run build && npm run test"
   },
   "devDependencies": {
     "@types/node": "^24.9.1",

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.6
+
+- Clarified the npm package split between the reusable core engine and the end-user CLI surface.
+- Strengthened store and package metadata around slopsquatting, AI dependency trust, and hallucinated package detection.
+- Prepared synchronized marketplace and npm release surfaces for a cleaner public footprint.
+
+## 0.1.5
+
+- Aligned workspace, CLI, and core package versions for a cleaner public release surface.
+- Improved category and positioning documentation around AI dependency trust.
+- Expanded supporting internal review materials during release prep.
+
 ## 0.1.4
 
 - Added marketplace-ready screenshots, richer overview copy, stronger search metadata, and broader editor compatibility messaging.

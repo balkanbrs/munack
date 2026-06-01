@@ -2,7 +2,7 @@
 
 Reality check for AI-generated code.
 
-Munack is a deterministic, local-first scanner that looks for potentially hallucinated packages, SDKs, imports, frameworks, and dependencies by comparing what it finds in a project against public package registries.
+Munack is a deterministic, local-first scanner that looks for potentially hallucinated packages, SDKs, imports, frameworks, dependencies, and slopsquatting risk by comparing what it finds in a project against public package registries.
 
 ![Munack Works Everywhere](packages/munack-vscode/media/screenshots/works-everywhere.png)
 
@@ -184,4 +184,4 @@ VS Code-compatible target editors:
 - VSCodium
 - Theia
 
-See [docs/BENCHMARKS.md](C:/Users/balka/Desktop/Munack/docs/BENCHMARKS.md), [docs/CASE_STUDIES.md](C:/Users/balka/Desktop/Munack/docs/CASE_STUDIES.md), and [docs/PROOF_GALLERY.md](C:/Users/balka/Desktop/Munack/docs/PROOF_GALLERY.md) for product examples and benchmark results.
+See [docs/BENCHMARKS.md](C:/Users/balka/Desktop/Munack/docs/BENCHMARKS.md) for benchmark results and product examples.
