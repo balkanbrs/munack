@@ -1,38 +1,22 @@
 # munack-cli
 
-`munack-cli` is the terminal interface for Munack, a local-first AI code reality checker.
+`munack-cli` is the command-line interface for Munack.
 
-Use it to detect:
+Use this package if you want the end-user `munack` command in a terminal, CI job, or editor-integrated terminal workflow.
+
+If you want the reusable scanning engine for your own product or extension, use `@balkanbrs/munack-core` instead.
+
+## What it detects
 
 - fake packages
 - fake imports
-- fake APIs
-- fake frameworks
-- fake dependencies
-- hallucinated SDK references
-- invented package names produced by AI-generated code
+- hallucinated dependencies
+- invented SDK references
+- slopsquatting risk in AI-generated code workflows
 
-## Commands
+## Good fit for
 
-- `munack scan`
-- `munack check`
-- `munack doctor`
-- `munack activate`
-- `munack license status`
-- `munack license deactivate`
-
-## Works well for
-
-- terminal users
-- JetBrains terminal workflows
-- Visual Studio terminal workflows
-- Sublime build systems
-- Zed tasks
-- Neovim commands
-- Emacs shell and compilation flows
-
-## Why people install it
-
-- verify npm, PyPI, crates.io, and Packagist dependencies quickly
-- catch hallucinated imports before they reach CI or production
-- keep AI-assisted coding local-first and privacy-first
+- CI checks
+- terminal-first developer workflows
+- editor tasks in JetBrains, Visual Studio, Zed, Neovim, Emacs, and Sublime
+- local validation before dependency installation or merge

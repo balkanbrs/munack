@@ -2,8 +2,8 @@
   "name": "munack",
   "displayName": "Munack",
   "publisher": "balkanbrs",
-  "version": "0.1.5",
-  "description": "Detect fake packages, fake imports, fake APIs, fake frameworks, fake dependencies, and hallucinated SDK references in AI-generated code.",
+  "version": "0.1.8",
+  "description": "Detect fake packages, fake imports, slopsquatting risk, and hallucinated dependencies in AI-generated code.",
   "repository": {
     "type": "git",
     "url": "https://github.com/balkanbrs/munack.git"
@@ -42,10 +42,14 @@
     "neovim",
     "npm",
     "openvsx",
+    "package-hallucination",
     "privacy",
     "pypi",
     "registry",
+    "registry-verification",
+    "slopsquatting",
     "supply-chain",
+    "supply-chain-security",
     "terminal",
     "theia",
     "vscode",
@@ -83,10 +87,10 @@
     "build": "tsc -p tsconfig.json --noEmit && esbuild src/extension.ts --bundle --platform=node --external:vscode --format=cjs --outfile=dist/extension.js",
     "build:test": "tsc -p tsconfig.test.json",
     "test": "npm run build && npm run build:test && node dist/test/runTest.js",
-    "package": "npm run build && vsce package --no-dependencies -o dist/munack-0.1.5.vsix"
+    "package": "npm run build && vsce package --no-dependencies -o dist/munack-0.1.8.vsix"
   },
   "dependencies": {
-    "@balkanbrs/munack-core": "0.1.4"
+    "@balkanbrs/munack-core": "0.1.8"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",

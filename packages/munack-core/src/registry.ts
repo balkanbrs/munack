@@ -27,7 +27,7 @@ export async function checkRegistry(
   try {
     const response = await fetchImpl(url, {
       headers: {
-        "user-agent": "munack/0.1.4"
+        "user-agent": "munack/0.1.8"
       },
       signal: controller.signal
     });

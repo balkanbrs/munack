@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.8
+
+- Strengthened the public evaluation story with a clearer product-explainer layer.
+- Refreshed public-facing package surfaces for easier first-time understanding.
+
+## 0.1.7
+
+- Added a faster public evaluation story with benchmark and quickstart guidance.
+- Refreshed the extension overview for lower-friction product validation.
+
 ## 0.1.6
 
 - Strengthened extension metadata and overview copy around slopsquatting and AI dependency trust.

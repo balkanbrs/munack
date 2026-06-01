@@ -1,0 +1,14 @@
+{
+  "name": "munack/adversarial-polyglot-suite",
+  "require": {
+    "php": "^8.2",
+    "ext-json": "*",
+    "composer-plugin-api": "^2.6",
+    "symfony/http-client": "^7.3",
+    "monolog/monolog": "^3.9",
+    "acme/llm-orchestrator": "^1.2"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11.5"
+  }
+}

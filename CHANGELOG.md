@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.8
+
+- Added a public "Why Munack Exists" explainer for faster product understanding and easier sharing.
+- Refined public proof and quickstart surfaces to reduce evaluation friction further.
+
+## 0.1.7
+
+- Added a public quickstart path for faster evaluation from npm, CLI, and benchmark samples.
+- Added benchmark result summaries so buyers and evaluators can verify signal quality faster.
+- Refreshed the public README and extension overview to reduce evaluation friction.
+
 ## 0.1.6
 
 - Clarified the npm package split between the reusable core engine and the end-user CLI surface.

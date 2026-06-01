@@ -1,0 +1,7 @@
+[project]
+name = "munack-adversarial-namespace-suite"
+version = "0.1.0"
+dependencies = [
+  "beautifulsoup4>=4.13.0",
+  "PyMuPDF>=1.26.0",
+]

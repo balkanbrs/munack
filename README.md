@@ -15,13 +15,7 @@ Best short positioning:
 - `Reality check for AI-generated dependencies`
 - `Catch hallucinated packages before they hit production`
 
-## Why this is sellable
-
-- The problem is clear in one sentence.
-- The buyer can understand the product in under five minutes.
-- The scanner is local-first, privacy-friendly, and easy to justify to engineering teams.
-- The product already ships in three useful forms: shared core, CLI, and VS Code-family extension.
-- Due diligence is lightweight because the codebase, packaging, licensing flow, and publish channels are visible.
+See [docs/WHY_MUNACK.md](C:/Users/balka/Desktop/Munack/docs/WHY_MUNACK.md) for the short public explanation of why Munack exists.
 
 ## Proof
 
@@ -46,6 +40,13 @@ Munack verifies package existence against:
 - [samples/adversarial-namespace-suite](C:/Users/balka/Desktop/Munack/samples/adversarial-namespace-suite)
 
 These samples intentionally mix real and hallucinated package references across JavaScript, Python, Rust, and PHP.
+
+### Current benchmark summaries
+
+- adversarial polyglot suite: `14 exists`, `8 suspicious`
+- adversarial namespace suite: `4 exists`, `2 suspicious`
+
+See [docs/BENCHMARK_RESULTS.md](C:/Users/balka/Desktop/Munack/docs/BENCHMARK_RESULTS.md) for the current reproducible benchmark summaries.
 
 ## What v1 does
 
@@ -81,6 +82,12 @@ These samples intentionally mix real and hallucinated package references across 
 
 ## CLI
 
+Install the public CLI:
+
+```powershell
+npm install -g munack-cli
+```
+
 Build the workspace:
 
 ```powershell
@@ -97,6 +104,14 @@ node .\packages\munack-cli\dist\index.js scan .\samples\adversarial-polyglot-sui
 node .\packages\munack-cli\dist\index.js scan . --format sarif --fail-on not_found,suspicious
 node .\packages\munack-cli\dist\index.js check react --registry npm
 node .\packages\munack-cli\dist\index.js doctor
+```
+
+Fast evaluation path:
+
+```powershell
+munack scan .
+munack scan .\samples\adversarial-polyglot-suite
+munack scan .\samples\adversarial-namespace-suite
 ```
 
 Optional project config:
@@ -151,7 +166,7 @@ npm run package:vsix
 
 Generated file:
 
-- `packages/munack-vscode/dist/munack-0.1.5.vsix`
+- `packages/munack-vscode/dist/munack-0.1.6.vsix`
 
 Marketplace assets and screenshots live under:
 
@@ -184,4 +199,5 @@ VS Code-compatible target editors:
 - VSCodium
 - Theia
 
-See [docs/BENCHMARKS.md](C:/Users/balka/Desktop/Munack/docs/BENCHMARKS.md) for benchmark results and product examples.
+See [docs/BENCHMARKS.md](C:/Users/balka/Desktop/Munack/docs/BENCHMARKS.md) for benchmark design and [docs/BENCHMARK_RESULTS.md](C:/Users/balka/Desktop/Munack/docs/BENCHMARK_RESULTS.md) for current results.
+See [docs/QUICKSTART.md](C:/Users/balka/Desktop/Munack/docs/QUICKSTART.md) for the fastest public evaluation path.

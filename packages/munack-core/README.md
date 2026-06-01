@@ -2,6 +2,9 @@
 
 `@balkanbrs/munack-core` is the shared engine behind Munack.
 
+If you want the end-user command, install `munack-cli`.
+If you want the reusable scanning engine for your own tool, use `@balkanbrs/munack-core`.
+
 It is built for developers and tool builders who want to detect:
 
 - fake packages
@@ -11,6 +14,7 @@ It is built for developers and tool builders who want to detect:
 - fake dependencies
 - fake SDK references
 - hallucinated package names in AI-generated code
+- slopsquatting risk in AI-assisted dependency workflows
 
 The package powers the Munack CLI and the Munack VS Code-compatible extension for VS Code, Cursor, Windsurf, VSCodium, and Theia-style workflows.
 

@@ -1,7 +1,7 @@
 {
   "name": "@balkanbrs/munack-core",
-  "version": "0.1.4",
-  "description": "Core engine for detecting fake packages, fake imports, hallucinated dependencies, and invented SDK references in AI-generated code.",
+  "version": "0.1.8",
+  "description": "Core engine for detecting fake packages, fake imports, slopsquatting risk, and hallucinated dependencies in AI-generated code.",
   "license": "MIT",
   "homepage": "https://github.com/balkanbrs/munack",
   "repository": {
@@ -31,6 +31,8 @@
     "hallucination",
     "hallucinated-package",
     "import-checker",
+    "slopsquatting",
+    "ai-security",
     "packagist",
     "pypi",
     "cratesio",

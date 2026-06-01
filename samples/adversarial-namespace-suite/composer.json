@@ -1,0 +1,7 @@
+{
+  "name": "munack/adversarial-namespace-suite",
+  "require": {
+    "symfony/http-client": "^7.3",
+    "monolog/monolog": "^3.9"
+  }
+}

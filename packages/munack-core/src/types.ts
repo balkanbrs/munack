@@ -69,7 +69,7 @@ export type LicensePlan = "free" | "pro" | "team";
 export interface LicenseStatus {
   active: boolean;
   plan: LicensePlan;
-  source: "free" | "env" | "cache" | "gumroad";
+  source: "free" | "env" | "cache" | "external";
   checkedAt?: string;
   offline?: boolean;
   licenseKeyLast4?: string;

@@ -8,9 +8,8 @@ import {
   getCachedLicenseState,
   getConfigDir,
   getConfiguredLicenseKey,
-  getConfiguredLicenseApiToken,
-  getConfiguredLicenseApiUrl,
-  getConfiguredProductId,
+  getConfiguredLicenseVerifierToken,
+  getConfiguredLicenseVerifierUrl,
   getCurrentMonthKey,
   getFreeMonthlyLimit,
   runScan,
@@ -167,20 +166,16 @@ program.command("doctor").action(async () => {
       value: getConfigDir()
     },
     {
-      item: "Gumroad product ID configured",
-      value: Boolean(getConfiguredProductId())
-    },
-    {
       item: "License key configured",
       value: Boolean(getConfiguredLicenseKey() ?? cache.licenseKey)
     },
     {
-      item: "Custom license API configured",
-      value: Boolean(getConfiguredLicenseApiUrl())
+      item: "External license verifier configured",
+      value: Boolean(getConfiguredLicenseVerifierUrl())
     },
     {
-      item: "Custom license API token configured",
-      value: Boolean(getConfiguredLicenseApiToken())
+      item: "License verifier token configured",
+      value: Boolean(getConfiguredLicenseVerifierToken())
     },
     {
       item: "License active",
@@ -207,7 +202,7 @@ program.command("doctor").action(async () => {
 
 program
   .command("activate")
-  .argument("[licenseKey]", "Gumroad license key")
+  .argument("[licenseKey]", "License key")
   .action(async (licenseKey?: string) => {
     const effectiveKey = licenseKey?.trim() || getConfiguredLicenseKey() || getCachedLicenseState().licenseKey;
     if (!effectiveKey) {

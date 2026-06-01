@@ -1,8 +1,6 @@
 import { getCurrentMonthKey, loadCache, saveCache } from "./config";
 import { LicenseCache, LicensePlan, LicenseStatus } from "./types";
 
-const GUMROAD_VERIFY_URL = "https://api.gumroad.com/v2/licenses/verify";
-const DEFAULT_GUMROAD_PRODUCT_ID = "qHus0ABlM9o8mhVLxqjVoA==";
 const FREE_MONTHLY_LIMIT = 5;
 const DEFAULT_CACHE_TTL_HOURS = 12;
 
@@ -29,16 +27,20 @@ export function getConfiguredLicenseKey(): string | undefined {
   return process.env.MUNACK_LICENSE_KEY?.trim() || undefined;
 }
 
-export function getConfiguredProductId(): string | undefined {
-  return process.env.MUNACK_GUMROAD_PRODUCT_ID?.trim() || DEFAULT_GUMROAD_PRODUCT_ID;
+export function getConfiguredLicenseVerifierUrl(): string | undefined {
+  return (
+    process.env.MUNACK_LICENSE_VERIFY_URL?.trim() ||
+    process.env.MUNACK_LICENSE_API_URL?.trim() ||
+    undefined
+  );
 }
 
-export function getConfiguredLicenseApiUrl(): string | undefined {
-  return process.env.MUNACK_LICENSE_API_URL?.trim() || undefined;
-}
-
-export function getConfiguredLicenseApiToken(): string | undefined {
-  return process.env.MUNACK_LICENSE_API_TOKEN?.trim() || undefined;
+export function getConfiguredLicenseVerifierToken(): string | undefined {
+  return (
+    process.env.MUNACK_LICENSE_VERIFY_TOKEN?.trim() ||
+    process.env.MUNACK_LICENSE_API_TOKEN?.trim() ||
+    undefined
+  );
 }
 
 function getLicenseCacheTtlMs(): number {
@@ -48,11 +50,8 @@ function getLicenseCacheTtlMs(): number {
   return safeHours * 60 * 60 * 1000;
 }
 
-function canUseCachedStatus(cache: LicenseCache, productId?: string, licenseKey?: string): boolean {
+function canUseCachedStatus(cache: LicenseCache, licenseKey?: string): boolean {
   if (!cache.licenseStatus?.checkedAt) {
-    return false;
-  }
-  if (productId && cache.productId && cache.productId !== productId) {
     return false;
   }
   if (licenseKey && cache.licenseKey && cache.licenseKey !== licenseKey) {
@@ -78,9 +77,8 @@ export async function verifyLicense(options: {
 }): Promise<LicenseStatus> {
   const cache = loadCache();
   const fetchImpl = options.fetchImpl ?? fetch;
-  const productId = getConfiguredProductId();
-  const licenseApiUrl = getConfiguredLicenseApiUrl();
-  const licenseApiToken = getConfiguredLicenseApiToken();
+  const licenseVerifierUrl = getConfiguredLicenseVerifierUrl();
+  const licenseVerifierToken = getConfiguredLicenseVerifierToken();
   const licenseKey = options.licenseKey ?? getConfiguredLicenseKey() ?? cache.licenseKey;
 
   if (!licenseKey) {
@@ -92,14 +90,14 @@ export async function verifyLicense(options: {
     };
   }
 
-  if (!productId) {
+  if (!licenseVerifierUrl) {
     const cached = cache.licenseStatus;
     if (cached?.active) {
       return {
         ...cached,
         source: "cache",
         offline: true,
-        detail: "Gumroad product ID is missing; using cached paid license state."
+        detail: "No external license verifier is configured; using cached paid license state."
       };
     }
     return {
@@ -107,11 +105,11 @@ export async function verifyLicense(options: {
       plan: "free",
       source: "free",
       licenseKeyLast4: maskKey(licenseKey),
-      detail: "No Gumroad product ID is configured for license verification."
+      detail: "No external license verifier is configured."
     };
   }
 
-  if (!options.forceRefresh && canUseCachedStatus(cache, productId, licenseKey) && cache.licenseStatus) {
+  if (!options.forceRefresh && canUseCachedStatus(cache, licenseKey) && cache.licenseStatus) {
     return {
       ...cache.licenseStatus,
       source: "cache",
@@ -120,64 +118,16 @@ export async function verifyLicense(options: {
   }
 
   try {
-    if (licenseApiUrl) {
-      const response = await fetchImpl(licenseApiUrl, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          ...(licenseApiToken ? { authorization: `Bearer ${licenseApiToken}` } : {})
-        },
-        body: JSON.stringify({
-          product: "munack",
-          productId,
-          licenseKey
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const payload = (await response.json()) as {
-        ok?: boolean;
-        active?: boolean;
-        plan?: LicensePlan;
-        productName?: string;
-        detail?: string;
-      };
-
-      const status: LicenseStatus = {
-        active: Boolean(payload.ok && payload.active),
-        plan: payload.ok && payload.active ? payload.plan ?? "pro" : "free",
-        source: "gumroad",
-        checkedAt: new Date().toISOString(),
-        licenseKeyLast4: maskKey(licenseKey),
-        productName: payload.productName,
-        detail: payload.detail ?? "Verified via custom license API."
-      };
-
-      saveCache({
-        ...cache,
-        licenseKey,
-        productId,
-        licenseStatus: status
-      });
-
-      return status;
-    }
-
-    const body = new URLSearchParams({
-      product_id: productId,
-      license_key: licenseKey,
-      increment_uses_count: "false"
-    });
-
-    const response = await fetchImpl(GUMROAD_VERIFY_URL, {
+    const response = await fetchImpl(licenseVerifierUrl, {
       method: "POST",
       headers: {
-        "content-type": "application/x-www-form-urlencoded"
+        "content-type": "application/json",
+        ...(licenseVerifierToken ? { authorization: `Bearer ${licenseVerifierToken}` } : {})
       },
-      body
+      body: JSON.stringify({
+        product: "munack",
+        licenseKey
+      })
     });
 
     if (!response.ok) {
@@ -185,54 +135,26 @@ export async function verifyLicense(options: {
     }
 
     const payload = (await response.json()) as {
-      success?: boolean;
-      purchase?: {
-        product_name?: string;
-        variants?: string;
-        variants_and_quantity?: string;
-        refunded?: boolean;
-        disputed?: boolean;
-      };
+      ok?: boolean;
+      active?: boolean;
+      plan?: LicensePlan;
+      productName?: string;
+      detail?: string;
     };
 
-    if (!payload.success || payload.purchase?.refunded || payload.purchase?.disputed) {
-      const invalidStatus: LicenseStatus = {
-        active: false,
-        plan: "free",
-        source: "gumroad",
-        checkedAt: new Date().toISOString(),
-        licenseKeyLast4: maskKey(licenseKey),
-        detail: "Gumroad rejected the license or marked the purchase as refunded/disputed."
-      };
-      saveCache({
-        ...cache,
-        licenseKey,
-        productId,
-        licenseStatus: invalidStatus
-      });
-      return invalidStatus;
-    }
-
-    const planSource =
-      payload.purchase?.variants_and_quantity ||
-      payload.purchase?.variants ||
-      payload.purchase?.product_name ||
-      "pro";
-
     const status: LicenseStatus = {
-      active: true,
-      plan: inferPlan(planSource),
-      source: "gumroad",
+      active: Boolean(payload.ok && payload.active),
+      plan: payload.ok && payload.active ? payload.plan ?? inferPlan(payload.productName ?? "pro") : "free",
+      source: "external",
       checkedAt: new Date().toISOString(),
       licenseKeyLast4: maskKey(licenseKey),
-      productName: payload.purchase?.product_name,
-      detail: "Verified with Gumroad."
+      productName: payload.productName,
+      detail: payload.detail ?? "Verified via external license service."
     };
 
     saveCache({
       ...cache,
       licenseKey,
-      productId,
       licenseStatus: status
     });
 
@@ -243,7 +165,7 @@ export async function verifyLicense(options: {
         ...cache.licenseStatus,
         source: "cache",
         offline: true,
-        detail: `Gumroad verification unavailable; using cached license state (${String(error)}).`
+        detail: `License verification unavailable; using cached license state (${String(error)}).`
       };
     }
 
@@ -252,7 +174,7 @@ export async function verifyLicense(options: {
       plan: "free",
       source: "free",
       licenseKeyLast4: maskKey(licenseKey),
-      detail: `Gumroad verification unavailable (${String(error)}).`
+      detail: `License verification unavailable (${String(error)}).`
     };
   }
 }
@@ -304,7 +226,6 @@ export function clearStoredLicense(): void {
   saveCache({
     ...cache,
     licenseKey: undefined,
-    productId: undefined,
     licenseStatus: undefined
   });
 }

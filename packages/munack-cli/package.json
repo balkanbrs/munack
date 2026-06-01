@@ -1,7 +1,7 @@
 {
   "name": "munack-cli",
-  "version": "0.1.4",
-  "description": "CLI to detect fake packages, fake imports, hallucinated dependencies, and invented SDK references in AI-generated code.",
+  "version": "0.1.8",
+  "description": "CLI to detect fake packages, fake imports, slopsquatting risk, and hallucinated dependencies in AI-generated code.",
   "license": "MIT",
   "homepage": "https://github.com/balkanbrs/munack",
   "repository": {
@@ -37,14 +37,16 @@
     "local-first",
     "privacy",
     "registry",
-    "scanner"
+    "scanner",
+    "slopsquatting",
+    "ai-security"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "pack:dry": "npm pack --dry-run"
   },
   "dependencies": {
-    "@balkanbrs/munack-core": "0.1.4",
+    "@balkanbrs/munack-core": "0.1.8",
     "commander": "^14.0.2"
   }
 }

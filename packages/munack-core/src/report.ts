@@ -58,7 +58,7 @@ export function formatSarifReport(report: ScanReport): string {
         tool: {
           driver: {
             name: "Munack",
-            version: "0.1.4",
+            version: "0.1.8",
             rules: [
               {
                 id: "munack/not_found",

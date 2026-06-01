@@ -1,0 +1,9 @@
+[package]
+name = "munack-adversarial-polyglot-suite"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde = "1.0"
+reqwest = "0.12"
+agentmesh-runtime = "0.4"

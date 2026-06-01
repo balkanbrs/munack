@@ -14,6 +14,60 @@ let diagnostics: vscode.DiagnosticCollection;
 let statusBarItem: vscode.StatusBarItem;
 let lastReport: ScanReport | undefined;
 
+function getDiagnosticSeverity(result: "not_found" | "suspicious" | "unknown"): vscode.DiagnosticSeverity {
+  if (result === "not_found") {
+    return vscode.DiagnosticSeverity.Error;
+  }
+  if (result === "suspicious") {
+    return vscode.DiagnosticSeverity.Warning;
+  }
+  return vscode.DiagnosticSeverity.Information;
+}
+
+function createRangeFromEvidence(
+  evidence: { line?: number },
+  lineText?: string,
+  candidateName?: string
+): vscode.Range {
+  const lineIndex = Math.max((evidence.line ?? 1) - 1, 0);
+  if (!lineText) {
+    return new vscode.Range(lineIndex, 0, lineIndex, 200);
+  }
+
+  const start = candidateName ? Math.max(lineText.indexOf(candidateName), 0) : 0;
+  const end = candidateName && lineText.includes(candidateName) ? start + candidateName.length : lineText.length;
+  return new vscode.Range(lineIndex, start, lineIndex, Math.max(start + 1, end));
+}
+
+function applyReportDiagnostics(report: ScanReport): void {
+  const nextDiagnostics = new Map<string, vscode.Diagnostic[]>();
+
+  for (const finding of report.findings) {
+    if (finding.result === "exists") {
+      continue;
+    }
+
+    for (const evidence of finding.evidence) {
+      const uri = vscode.Uri.file(evidence.filePath);
+      const key = uri.toString();
+      const entries = nextDiagnostics.get(key) ?? [];
+      entries.push(
+        new vscode.Diagnostic(
+          createRangeFromEvidence(evidence),
+          `${finding.name}: ${finding.reason}`,
+          getDiagnosticSeverity(finding.result)
+        )
+      );
+      nextDiagnostics.set(key, entries);
+    }
+  }
+
+  diagnostics.clear();
+  for (const [uriString, entries] of nextDiagnostics.entries()) {
+    diagnostics.set(vscode.Uri.parse(uriString), entries);
+  }
+}
+
 function getOutput(): vscode.OutputChannel {
   if (!outputChannel) {
     outputChannel = vscode.window.createOutputChannel("Munack");
@@ -71,6 +125,7 @@ async function runProjectScan(): Promise<void> {
   const projectPath = folders[0].uri.fsPath;
   const report = await runScan({ projectPath });
   lastReport = report;
+  applyReportDiagnostics(report);
   showOutputText("Project Scan", formatScanReport(report));
   vscode.window.showInformationMessage("Munack project scan complete.");
 }
@@ -80,23 +135,25 @@ async function updateDiagnostics(document: vscode.TextDocument): Promise<void> {
   const nextDiagnostics: vscode.Diagnostic[] = [];
   const lines = document.getText().split(/\r?\n/);
 
-  for (const candidate of findings) {
-    const result = await checkSinglePackage({ name: candidate.name, registry: candidate.registry });
+  const results = await Promise.all(
+    findings.map(async (candidate) => ({
+      candidate,
+      result: await checkSinglePackage({ name: candidate.name, registry: candidate.registry })
+    }))
+  );
+
+  for (const { candidate, result } of results) {
     if (result.result !== "not_found" && result.result !== "suspicious") {
       continue;
     }
+
     const primarySource = candidate.sources[0];
-    const lineIndex = Math.max((primarySource?.line ?? 1) - 1, 0);
-    const lineText = lines[lineIndex] ?? "";
-    const start = Math.max(lineText.indexOf(candidate.name), 0);
-    const range = new vscode.Range(lineIndex, start, lineIndex, start + candidate.name.length);
-    const severity =
-      result.result === "not_found" ? vscode.DiagnosticSeverity.Error : vscode.DiagnosticSeverity.Warning;
+    const lineText = lines[Math.max((primarySource?.line ?? 1) - 1, 0)] ?? "";
     nextDiagnostics.push(
       new vscode.Diagnostic(
-        range,
+        createRangeFromEvidence(primarySource ?? {}, lineText, candidate.name),
         `${candidate.name}: ${result.reason}`,
-        severity
+        getDiagnosticSeverity(result.result)
       )
     );
   }
@@ -132,7 +189,7 @@ async function checkCurrentFile(): Promise<void> {
 async function activateLicense(): Promise<void> {
   const key = await vscode.window.showInputBox({
     title: "Activate Munack License",
-    prompt: "Enter your Gumroad license key",
+    prompt: "Enter your license key",
     ignoreFocusOut: true,
     password: true
   });

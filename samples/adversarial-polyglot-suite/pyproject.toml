@@ -1,0 +1,16 @@
+[project]
+name = "munack-adversarial-polyglot-suite"
+version = "0.1.0"
+dependencies = [
+  "fastapi>=0.115.0",
+  "pydantic>=2.11.0",
+  "PyYAML>=6.0.2",
+  "Pillow>=11.0.0",
+  "scikit-learn>=1.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.4.0",
+  "litellm-proxy-sdk>=0.9.0",
+]

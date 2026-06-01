@@ -44,6 +44,28 @@ describe("discoverProjectPackages", () => {
     expect(names).toContain("crates:inventedcrate");
   });
 
+  it("normalizes python import aliases and crate import separators", () => {
+    const root = createTempProject({
+      "pyproject.toml": "[project]\ndependencies = [\"PyYAML>=6.0\", \"scikit-learn>=1.5\", \"beautifulsoup4>=4.13\", \"PyMuPDF>=1.26\"]\n",
+      "service.py": "import yaml\nfrom sklearn.model_selection import train_test_split\nfrom bs4 import BeautifulSoup\nimport fitz\n",
+      "Cargo.toml": "[dependencies]\nagentmesh-runtime = \"0.4\"\n",
+      "src/lib.rs": "use agentmesh_runtime::Supervisor;\n"
+    });
+
+    const result = discoverProjectPackages(root);
+    const names = result.candidates.map((candidate) => `${candidate.registry}:${candidate.name}`);
+    expect(names).toContain("pypi:PyYAML");
+    expect(names).toContain("pypi:scikit-learn");
+    expect(names).toContain("pypi:beautifulsoup4");
+    expect(names).toContain("pypi:PyMuPDF");
+    expect(names).not.toContain("pypi:yaml");
+    expect(names).not.toContain("pypi:sklearn");
+    expect(names).not.toContain("pypi:bs4");
+    expect(names).not.toContain("pypi:fitz");
+    expect(names).toContain("crates:agentmesh-runtime");
+    expect(names).not.toContain("crates:agentmesh_runtime");
+  });
+
   it("skips Python standard library imports", () => {
     const root = createTempProject({
       "main.py": "import os\nfrom json import loads\nimport requests\n"
@@ -54,6 +76,67 @@ describe("discoverProjectPackages", () => {
     expect(names).toContain("pypi:requests");
     expect(names).not.toContain("pypi:os");
     expect(names).not.toContain("pypi:json");
+  });
+
+  it("parses composer lockfiles and skips composer platform packages", () => {
+    const root = createTempProject({
+      "composer.json": JSON.stringify(
+        {
+          require: {
+            php: "^8.2",
+            "ext-json": "*",
+            "composer-plugin-api": "^2.6"
+          }
+        },
+        null,
+        2
+      ),
+      "composer.lock": JSON.stringify(
+        {
+          packages: [{ name: "symfony/http-client" }],
+          "packages-dev": [{ name: "phpunit/phpunit" }]
+        },
+        null,
+        2
+      )
+    });
+
+    const result = discoverProjectPackages(root);
+    const names = result.candidates.map((candidate) => `${candidate.registry}:${candidate.name}`);
+    expect(names).toContain("packagist:symfony/http-client");
+    expect(names).toContain("packagist:phpunit/phpunit");
+    expect(names).not.toContain("packagist:php");
+    expect(names).not.toContain("packagist:ext-json");
+    expect(names).not.toContain("packagist:composer-plugin-api");
+  });
+
+  it("maps php use statements to declared packages and infers undeclared vendor packages", () => {
+    const root = createTempProject({
+      "composer.json": JSON.stringify(
+        {
+          require: {
+            "symfony/http-client": "^7.3",
+            "monolog/monolog": "^3.9"
+          }
+        },
+        null,
+        2
+      ),
+      "public/index.php": `<?php
+use Symfony\\Component\\HttpClient\\{HttpClient, MockHttpClient};
+use Monolog\\{Logger, Handler\\StreamHandler};
+use Vendor\\GhostSync\\{Runtime\\Pipeline, Client as GhostSyncClient};
+`
+    });
+
+    const result = discoverProjectPackages(root);
+    const symfony = result.candidates.find((candidate) => candidate.name === "symfony/http-client");
+    const monolog = result.candidates.find((candidate) => candidate.name === "monolog/monolog");
+    const inferred = result.candidates.find((candidate) => candidate.name === "vendor/ghost-sync");
+
+    expect(symfony?.sources.some((source) => source.kind === "use" && source.language === "php")).toBe(true);
+    expect(monolog?.sources.some((source) => source.kind === "use" && source.language === "php")).toBe(true);
+    expect(inferred?.sources.some((source) => source.kind === "use" && source.language === "php")).toBe(true);
   });
 });
 
@@ -95,7 +178,8 @@ describe("runScan", () => {
   });
 
   afterEach(() => {
-    delete process.env.MUNACK_GUMROAD_PRODUCT_ID;
+    delete process.env.MUNACK_LICENSE_VERIFY_URL;
+    delete process.env.MUNACK_LICENSE_VERIFY_TOKEN;
     delete process.env.MUNACK_LICENSE_API_URL;
     delete process.env.MUNACK_LICENSE_API_TOKEN;
     delete process.env.MUNACK_LICENSE_KEY;
@@ -121,10 +205,9 @@ describe("runScan", () => {
     expect(report.findings[0]?.evidence[0]?.filePath).toContain("app.ts");
   });
 
-  it("uses the custom license API with bearer auth when configured", async () => {
-    process.env.MUNACK_GUMROAD_PRODUCT_ID = "gumroad-product-id";
-    process.env.MUNACK_LICENSE_API_URL = "https://license.example.com/api/gumroad/verify";
-    process.env.MUNACK_LICENSE_API_TOKEN = "secret-token";
+  it("uses the external license verifier with bearer auth when configured", async () => {
+    process.env.MUNACK_LICENSE_VERIFY_URL = "https://license.example.com/api/license/verify";
+    process.env.MUNACK_LICENSE_VERIFY_TOKEN = "secret-token";
 
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) =>
       ({
@@ -134,7 +217,7 @@ describe("runScan", () => {
           active: true,
           plan: "team",
           productName: "Munack Team",
-          detail: "Verified via custom license API."
+          detail: "Verified via external license service."
         })
       }) as Response);
 
@@ -147,12 +230,12 @@ describe("runScan", () => {
     expect(status.active).toBe(true);
     expect(status.plan).toBe("team");
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(fetchMock.mock.calls[0]?.[0]).toBe("https://license.example.com/api/gumroad/verify");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("https://license.example.com/api/license/verify");
     expect(fetchMock.mock.calls[0]?.[1]?.headers).toEqual({
       "content-type": "application/json",
       authorization: "Bearer secret-token"
     });
     expect(fetchMock.mock.calls[0]?.[1]?.body).toContain("\"product\":\"munack\"");
-    expect(fetchMock.mock.calls[0]?.[1]?.body).toContain("\"productId\":\"gumroad-product-id\"");
+    expect(fetchMock.mock.calls[0]?.[1]?.body).toContain("\"licenseKey\":\"munack-license-key\"");
   });
 });
