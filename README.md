@@ -6,10 +6,79 @@ Munack is a deterministic, local-first scanner that looks for potentially halluc
 
 ![Munack Works Everywhere](packages/munack-vscode/media/screenshots/works-everywhere.png)
 
+## Positioning
+
+Munack catches hallucinated packages, fake imports, invented SDK references, and suspicious AI-generated dependencies before they hit production.
+
+Best short positioning:
+
+- `Reality check for AI-generated dependencies`
+- `Catch hallucinated packages before they hit production`
+
+## Why this is sellable
+
+- The problem is clear in one sentence.
+- The buyer can understand the product in under five minutes.
+- The scanner is local-first, privacy-friendly, and easy to justify to engineering teams.
+- The product already ships in three useful forms: shared core, CLI, and VS Code-family extension.
+- Due diligence is lightweight because the codebase, packaging, licensing flow, and publish channels are visible.
+
+## What a buyer gets
+
+- A standalone GitHub repository: [balkanbrs/munack](https://github.com/balkanbrs/munack)
+- A packaged VS Code-compatible extension (`.vsix`)
+- Published npm packages for the core engine and CLI
+- VS Marketplace and Open VSX distribution setup
+- Gumroad activation flow with local license cache behavior
+- Buyer docs, benchmark docs, and handoff notes under `docs/`
+
+## Proof
+
+### Before/after positioning
+
+Without Munack, generated code can reference package names that look plausible but do not exist in the expected registry.
+
+With Munack, those references are surfaced as `suspicious` or `not_found` before they silently reach CI, PR review, or production release workflows.
+
+### Registry-backed scope
+
+Munack verifies package existence against:
+
+- `npm`
+- `PyPI`
+- `crates.io`
+- `Packagist`
+
+### Concrete examples in the repo
+
+- [samples/adversarial-polyglot-suite](C:/Users/balka/Desktop/Munack/samples/adversarial-polyglot-suite)
+- [samples/adversarial-namespace-suite](C:/Users/balka/Desktop/Munack/samples/adversarial-namespace-suite)
+
+These samples intentionally mix real and hallucinated package references across JavaScript, Python, Rust, and PHP.
+
+### Benchmark and buyer documents
+
+- [docs/BENCHMARKS.md](C:/Users/balka/Desktop/Munack/docs/BENCHMARKS.md)
+- [docs/CASE_STUDIES.md](C:/Users/balka/Desktop/Munack/docs/CASE_STUDIES.md)
+- [docs/PROOF_GALLERY.md](C:/Users/balka/Desktop/Munack/docs/PROOF_GALLERY.md)
+- [docs/ACQUISITION_BRIEF.md](C:/Users/balka/Desktop/Munack/docs/ACQUISITION_BRIEF.md)
+- [docs/BUYER_HANDOFF.md](C:/Users/balka/Desktop/Munack/docs/BUYER_HANDOFF.md)
+- [docs/REAL_SALE_SCENARIOS.md](C:/Users/balka/Desktop/Munack/docs/REAL_SALE_SCENARIOS.md)
+- [docs/OUTBOUND_PLAYBOOK.md](C:/Users/balka/Desktop/Munack/docs/OUTBOUND_PLAYBOOK.md)
+- [docs/SALES_ROOM.md](C:/Users/balka/Desktop/Munack/docs/SALES_ROOM.md)
+- [docs/COMPETITOR_MATRIX.md](C:/Users/balka/Desktop/Munack/docs/COMPETITOR_MATRIX.md)
+- [docs/WHY_NOW.md](C:/Users/balka/Desktop/Munack/docs/WHY_NOW.md)
+- [docs/OUTREACH_TEMPLATES.md](C:/Users/balka/Desktop/Munack/docs/OUTREACH_TEMPLATES.md)
+- [docs/DILIGENCE_FAQ.md](C:/Users/balka/Desktop/Munack/docs/DILIGENCE_FAQ.md)
+- [docs/BUYER_PIPELINE_TEMPLATE.csv](C:/Users/balka/Desktop/Munack/docs/BUYER_PIPELINE_TEMPLATE.csv)
+- [docs/TARGET_BUYERS.md](C:/Users/balka/Desktop/Munack/docs/TARGET_BUYERS.md)
+- [docs/WAVE1_OUTREACH.md](C:/Users/balka/Desktop/Munack/docs/WAVE1_OUTREACH.md)
+- [docs/BUYER_SHORTLIST.csv](C:/Users/balka/Desktop/Munack/docs/BUYER_SHORTLIST.csv)
+
 ## What v1 does
 
 - Scans dependency manifests and lockfiles for JavaScript, Python, Rust, and PHP ecosystems
-- Scans import statements in JS, TS, Python, and Rust where the mapping is practical
+- Scans import statements in JS, TS, Python, Rust, and PHP where the mapping is practical
 - Checks existence against `npm`, `PyPI`, `crates.io`, and `Packagist`
 - Classifies findings as `exists`, `not_found`, `suspicious`, or `unknown`
 - Supports project config via `.munackrc.json` or `package.json#munack`
@@ -46,7 +115,6 @@ Build the workspace:
 ```powershell
 npm install
 npm run build
-npm run admin
 ```
 
 Run the CLI directly from the repo:
@@ -54,6 +122,7 @@ Run the CLI directly from the repo:
 ```powershell
 node .\packages\munack-cli\dist\index.js scan .
 node .\packages\munack-cli\dist\index.js scan .\samples\hallucinated-mixed
+node .\packages\munack-cli\dist\index.js scan .\samples\adversarial-polyglot-suite
 node .\packages\munack-cli\dist\index.js scan . --format sarif --fail-on not_found,suspicious
 node .\packages\munack-cli\dist\index.js check react --registry npm
 node .\packages\munack-cli\dist\index.js doctor
@@ -71,6 +140,21 @@ Optional project config:
   "registryTimeoutMs": 8000,
   "registryConcurrency": 8
 }
+```
+
+## CI and SARIF
+
+Munack is already set up to fit CI and marketplace-grade release workflows.
+
+- SARIF output is supported from the CLI
+- GitHub Actions workflow files already exist in `.github/workflows`
+- `--fail-on` can make CI fail on `not_found` and `suspicious`
+
+Example:
+
+```powershell
+node .\packages\munack-cli\dist\index.js scan . --format sarif --output .\reports\munack.sarif
+node .\packages\munack-cli\dist\index.js scan . --fail-on not_found,suspicious
 ```
 
 ## Licensing
@@ -115,37 +199,18 @@ npm run package:vsix
 
 Generated file:
 
-- `packages/munack-vscode/dist/munack-0.1.4.vsix`
+- `packages/munack-vscode/dist/munack-0.1.5.vsix`
+
+Marketplace assets and screenshots live under:
+
+- `packages/munack-vscode/media`
+- `packages/munack-vscode/media/screenshots`
 
 Theia helper launcher:
 
 ```powershell
 .\scripts\launch-theia-with-munack.ps1
 ```
-
-## Local admin panel
-
-Run the local admin dashboard:
-
-```powershell
-npm run admin
-```
-
-Then open:
-
-- `http://127.0.0.1:8791`
-
-If that port is already used, start it on another port:
-
-```powershell
-$env:MUNACK_ADMIN_PORT="8791"
-npm run admin
-```
-
-Optional manual overrides:
-
-- copy `admin/overrides.json.example` to `admin/overrides.json`
-- fill in values such as Marketplace installs or Gumroad funnel numbers that public product pages do not expose
 
 ## Compatibility targets
 
