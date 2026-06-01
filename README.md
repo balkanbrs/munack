@@ -23,15 +23,6 @@ Best short positioning:
 - The product already ships in three useful forms: shared core, CLI, and VS Code-family extension.
 - Due diligence is lightweight because the codebase, packaging, licensing flow, and publish channels are visible.
 
-## What a buyer gets
-
-- A standalone GitHub repository: [balkanbrs/munack](https://github.com/balkanbrs/munack)
-- A packaged VS Code-compatible extension (`.vsix`)
-- Published npm packages for the core engine and CLI
-- VS Marketplace and Open VSX distribution setup
-- Gumroad activation flow with local license cache behavior
-- Buyer docs, benchmark docs, and handoff notes under `docs/`
-
 ## Proof
 
 ### Before/after positioning
@@ -56,25 +47,6 @@ Munack verifies package existence against:
 
 These samples intentionally mix real and hallucinated package references across JavaScript, Python, Rust, and PHP.
 
-### Benchmark and buyer documents
-
-- [docs/BENCHMARKS.md](C:/Users/balka/Desktop/Munack/docs/BENCHMARKS.md)
-- [docs/CASE_STUDIES.md](C:/Users/balka/Desktop/Munack/docs/CASE_STUDIES.md)
-- [docs/PROOF_GALLERY.md](C:/Users/balka/Desktop/Munack/docs/PROOF_GALLERY.md)
-- [docs/ACQUISITION_BRIEF.md](C:/Users/balka/Desktop/Munack/docs/ACQUISITION_BRIEF.md)
-- [docs/BUYER_HANDOFF.md](C:/Users/balka/Desktop/Munack/docs/BUYER_HANDOFF.md)
-- [docs/REAL_SALE_SCENARIOS.md](C:/Users/balka/Desktop/Munack/docs/REAL_SALE_SCENARIOS.md)
-- [docs/OUTBOUND_PLAYBOOK.md](C:/Users/balka/Desktop/Munack/docs/OUTBOUND_PLAYBOOK.md)
-- [docs/SALES_ROOM.md](C:/Users/balka/Desktop/Munack/docs/SALES_ROOM.md)
-- [docs/COMPETITOR_MATRIX.md](C:/Users/balka/Desktop/Munack/docs/COMPETITOR_MATRIX.md)
-- [docs/WHY_NOW.md](C:/Users/balka/Desktop/Munack/docs/WHY_NOW.md)
-- [docs/OUTREACH_TEMPLATES.md](C:/Users/balka/Desktop/Munack/docs/OUTREACH_TEMPLATES.md)
-- [docs/DILIGENCE_FAQ.md](C:/Users/balka/Desktop/Munack/docs/DILIGENCE_FAQ.md)
-- [docs/BUYER_PIPELINE_TEMPLATE.csv](C:/Users/balka/Desktop/Munack/docs/BUYER_PIPELINE_TEMPLATE.csv)
-- [docs/TARGET_BUYERS.md](C:/Users/balka/Desktop/Munack/docs/TARGET_BUYERS.md)
-- [docs/WAVE1_OUTREACH.md](C:/Users/balka/Desktop/Munack/docs/WAVE1_OUTREACH.md)
-- [docs/BUYER_SHORTLIST.csv](C:/Users/balka/Desktop/Munack/docs/BUYER_SHORTLIST.csv)
-
 ## What v1 does
 
 - Scans dependency manifests and lockfiles for JavaScript, Python, Rust, and PHP ecosystems
@@ -92,7 +64,6 @@ These samples intentionally mix real and hallucinated package references across 
 - `packages/munack-cli` - CLI for terminals and editor-integrated terminals
 - `packages/munack-vscode` - VS Code-compatible extension for VS Code family editors
 - `docs/` - release and upload documentation
-- `services/munack-license-api` - optional standalone PHP backend for Gumroad verify/ping on shared hosting
 - `samples/` - sample projects used for smoke testing
 
 ## Supported inputs
@@ -126,9 +97,6 @@ node .\packages\munack-cli\dist\index.js scan .\samples\adversarial-polyglot-sui
 node .\packages\munack-cli\dist\index.js scan . --format sarif --fail-on not_found,suspicious
 node .\packages\munack-cli\dist\index.js check react --registry npm
 node .\packages\munack-cli\dist\index.js doctor
-node .\packages\munack-cli\dist\index.js activate YOUR-GUMROAD-LICENSE-KEY
-node .\packages\munack-cli\dist\index.js license status
-node .\packages\munack-cli\dist\index.js license deactivate
 ```
 
 Optional project config:
@@ -163,23 +131,7 @@ node .\packages\munack-cli\dist\index.js scan . --fail-on not_found,suspicious
 - Pro: `$9/month`, unlimited scans, export report
 - Team: `$19/month`, same behavior as Pro in v1 with plan metadata prepared
 
-Munack reads:
-
-- `MUNACK_GUMROAD_PRODUCT_ID`
-- `MUNACK_LICENSE_KEY`
-- `MUNACK_LICENSE_API_URL`
-- `MUNACK_LICENSE_API_TOKEN`
-- `MUNACK_HOME`
-- `MUNACK_LICENSE_CACHE_TTL_HOURS`
-- `MUNACK_REGISTRY_TIMEOUT_MS`
-
 License status and usage are cached locally under the user config directory at `~/.munack/state.json`.
-If `MUNACK_LICENSE_API_URL` is set, Munack can verify against a dedicated Munack license backend instead of calling Gumroad directly.
-The repo also includes a deployable PHP backend in `services/munack-license-api`.
-
-Current default Gumroad product ID embedded in Munack:
-
-- `qHus0ABlM9o8mhVLxqjVoA==`
 
 ## VS Code extension
 
@@ -232,6 +184,4 @@ VS Code-compatible target editors:
 - VSCodium
 - Theia
 
-See [docs/VSCODE_MARKETPLACE_UPLOAD.md](C:/Users/balka/Desktop/Munack/docs/VSCODE_MARKETPLACE_UPLOAD.md) and [REPORT.md](C:/Users/balka/Desktop/Munack/REPORT.md) for packaging and local test status.
-For Gumroad webhook and activation architecture, see [docs/GUMROAD_ARCHITECTURE.md](C:/Users/balka/Desktop/Munack/docs/GUMROAD_ARCHITECTURE.md).
-For shared-hosting deployment notes, see [docs/HOSTINGER_DEPLOY.md](C:/Users/balka/Desktop/Munack/docs/HOSTINGER_DEPLOY.md).
+See [docs/BENCHMARKS.md](C:/Users/balka/Desktop/Munack/docs/BENCHMARKS.md), [docs/CASE_STUDIES.md](C:/Users/balka/Desktop/Munack/docs/CASE_STUDIES.md), and [docs/PROOF_GALLERY.md](C:/Users/balka/Desktop/Munack/docs/PROOF_GALLERY.md) for product examples and benchmark results.
